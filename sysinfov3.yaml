@@ -1,0 +1,79 @@
+---
+- hosts: windows
+  gather_facts: no
+
+  tasks:
+    - block:
+        - name: User and System Information
+          win_command: whoami
+          register: whoami_output
+        - debug:
+            msg: "The current user is {{ whoami_output.stdout }}"
+
+        - name: System Information
+          win_command: systeminfo
+          register: systeminfo_output
+        - debug:
+            msg: "System information: {{ systeminfo_output.stdout }}"
+      tags: ["info", "system"]
+
+    - block:
+        - name: Network Information
+          win_command: ipconfig /all
+          register: ipconfig_output
+        - debug:
+            msg: "Full IPCONFIG output: {{ ipconfig_output.stdout }}"
+
+        - name: Display Active Network Connections
+          win_command: netstat -an
+          register: netstat_output
+        - debug:
+            msg: "Active network connections: {{ netstat_output.stdout }}"
+
+        - name: List Firewall Rules
+          win_command: netsh advfirewall firewall show rule name=all
+          register: firewall_rules
+        - debug:
+            msg: "Firewall rules: {{ firewall_rules.stdout }}"
+      tags: ["network"]
+
+    - block:
+        - name: Task List
+          win_command: tasklist
+          register: tasklist_output
+        - debug:
+            msg: "Current running tasks: {{ tasklist_output.stdout }}"
+
+        - name: View Services
+          win_command: sc query
+          register: services_output
+        - debug:
+            msg: "List of services: {{ services_output.stdout }}"
+
+        - name: System Uptime
+          win_command: net statistics workstation
+          register: system_uptime
+        - debug:
+            msg: "System uptime statistics: {{ system_uptime.stdout }}"
+      tags: ["tasks", "services"]
+
+    - block:
+        - name: View Scheduled Tasks
+          win_command: schtasks /query
+          register: scheduled_tasks
+        - debug:
+            msg: "Scheduled tasks: {{ scheduled_tasks.stdout }}"
+
+        - name: Event Logs
+          win_command: wevtutil el
+          register: event_logs
+        - debug:
+            msg: "Event logs available: {{ event_logs.stdout }}"
+
+        - name: Read Specific Event Log
+          win_command: wevtutil qe Application /c:5 /rd:true /f:text
+          register: recent_apps_log
+        - debug:
+            msg: "Recent Application event log entries: {{ recent_apps_log.stdout }}"
+      tags: ["tasks", "logs"]
+

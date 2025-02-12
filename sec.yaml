@@ -1,0 +1,28 @@
+---
+- hosts: windows
+  gather_facts: no
+
+  tasks:
+    - name: Check current user
+      win_command: whoami
+      register: whoami_output  # Store the output in a variable
+
+    - name: Print whoami output
+      debug:
+        msg: "The current user is {{ whoami_output.stdout }}"  # Display the output
+
+    - name: Check IPCONFIG
+      win_command: ipconfig
+      register: ipconfig_output
+
+    - name: Print ipconfig output
+      debug:
+        msg: "IP configuration details: {{ ipconfig_output.stdout }}"  # Display the output
+
+    - name: Check NETSH WLAN Profiles
+      win_command: netsh wlan show profiles
+      register: netsh_output
+
+    - name: Print netsh_output output
+      debug:
+        msg: "WLAN profiles: {{ netsh_output.stdout }}"  # Display the output    

@@ -1,0 +1,78 @@
+---
+- hosts: windows
+  gather_facts: no
+
+  tasks:
+    - block:
+        - name: User and System Information
+          win_command: whoami
+          register: whoami_output
+        - debug:
+            msg: "The current user is: \n{{ whoami_output.stdout | regex_replace('\r\n', '\n') }}"
+
+        - name: System Information
+          win_command: systeminfo
+          register: systeminfo_output
+        - debug:
+            msg: "System Information:\n{{ systeminfo_output.stdout | regex_replace('\r\n', '\n') }}"
+      tags: ["info", "system"]
+
+    - block:
+        - name: Network Information
+          win_command: ipconfig /all
+          register: ipconfig_output
+        - debug:
+            msg: "Full IPCONFIG output:\n{{ ipconfig_output.stdout | regex_replace('\r\n', '\n') }}"
+
+        - name: Display Active Network Connections
+          win_command: netstat -an
+          register: netstat_output
+        - debug:
+            msg: "Active Network Connections:\n{{ netstat_output.stdout | regex_replace('\r\n', '\n') }}"
+
+        - name: List Firewall Rules
+          win_command: netsh advfirewall firewall show rule name=all
+          register: firewall_rules
+        - debug:
+            msg: "Firewall Rules:\n{{ firewall_rules.stdout | regex_replace('\r\n', '\n') }}"
+      tags: ["network"]
+
+    - block:
+        - name: Task List
+          win_command: tasklist
+          register: tasklist_output
+        - debug:
+            msg: "Current Running Tasks:\n{{ tasklist_output.stdout | regex_replace('\r\n', '\n') }}"
+
+        - name: View Services
+          win_command: sc query
+          register: services_output
+        - debug:
+            msg: "List of Services:\n{{ services_output.stdout | regex_replace('\r\n', '\n') }}"
+
+        - name: System Uptime
+          win_command: net statistics workstation
+          register: system_uptime
+        - debug:
+            msg: "System Uptime Statistics:\n{{ system_uptime.stdout | regex_replace('\r\n', '\n') }}"
+      tags: ["tasks", "services"]
+
+    - block:
+        - name: View Scheduled Tasks
+          win_command: schtasks /query
+          register: scheduled_tasks
+        - debug:
+            msg: "Scheduled Tasks:\n{{ scheduled_tasks.stdout | regex_replace('\r\n', '\n') }}"
+
+        - name: Event Logs
+          win_command: wevtutil el
+          register: event_logs
+        - debug:
+            msg: "Event Logs Available:\n{{ event_logs.stdout | regex_replace('\r\n', '\n') }}"
+
+        - name: Read Specific Event Log
+          win_shell: wevtutil qe Application /c:5 /rd:true /f:text
+          register: recent_apps_log
+        - debug:
+            msg: "Recent Application Event Log Entries:\n{{ recent_apps_log.stdout | regex_replace('\r\n', '\n') }}"
+      tags: ["tasks", "logs"]

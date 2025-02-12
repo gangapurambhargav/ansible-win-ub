@@ -1,0 +1,33 @@
+- hosts: windows
+  gather_facts: no
+
+  tasks:
+    - block:
+        - name: User and System Information
+          win_command: whoami
+          register: whoami_output
+
+        - debug:
+            msg: "The current user is {{ whoami_output.stdout }}"
+
+        - win_command: systeminfo
+          register: systeminfo_output
+
+        - debug:
+            msg: "System INFO output: {{ systeminfo_output.stdout }}"
+      tags: ["info"]
+
+    - block:
+        - name: Network Information
+          win_command: ipconfig
+          register: ipconfig_output
+
+        - debug:
+            msg: "IPCONFIG output: {{ ipconfig_output.stdout }}"
+
+        - win_command: netsh wlan show profiles
+          register: netsh_output
+
+        - debug:
+            msg: "NETSH WLAN Profiles: {{ netsh_output.stdout }}"
+      tags: ["network"]
