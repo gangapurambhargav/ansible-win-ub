@@ -116,7 +116,7 @@ New-NetFirewallRule -DisplayName "WinRM 5985" -Direction Inbound -Action Allow -
 sudo nano /etc/ansible/hosts
 ```
 
-#### Inventory File Example
+#### Inventory File Example hosts.ini
 
 ```ini
 [windows]
