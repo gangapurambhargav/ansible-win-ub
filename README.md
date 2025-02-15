@@ -199,7 +199,7 @@ ansible -i inventory.ini -m shell -a 'whoami' all
 
 ---
 
-## Part 8: Windows System Information Playbook
+## Part 8: Windows System Information Playbook YAML
 
 ```yaml
 ---
